@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,22 +8,52 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password_hash String
+  created_at    DateTime @default(now())
+
+  checkIns CheckIn[]
 
   @@map("users")
 }
 
+model CheckIn {
+  id           String    @id @default(uuid())
+  created_at   DateTime  @default(now())
+  validated_at DateTime?
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+
+  gym    Gym    @relation(fields: [gym_Id], references: [id])
+  gym_Id String
+
+  @@map("check_ins")
+}
+
+model Gym {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  phone       String?
+  latitude    Decimal
+  longitude   Decimal
+
+  checkIns CheckIn[]
+
+  @@map("gyms")
+}
+
 /**
- * No prisma nao chamamos de tabela
- * model, e como uma classe o nome sera em Maisculo
- * --model User
- * @@map
- * --Podemos mudar o nome da nossa tabela
- * @ = configura o campo
- * @@ a tabela
- * npx prisma generate
- * --Cria de forma auto pro baixa dos panos a typagem
- * --A intrgracao com o type para enter que existe a tabela e os dados
+ * um user faz login, entao teremos um user_id desse checkin
+ * Assim como teremos tambem o id da gym
+ * user   User   @relation(fields: [userId], references: [id])
+ * userId String
+ * --Com o outo incremente do prisma, usando o user User(nome da tabela)
+ * ele adiciona toda a relacao do campo
+ * Tambem criando no user o  CheckIn CheckIn[], falando que o User tera farios checkin
+ * --Lembrando que esses dados nao iram cria tabela
+ * Somente o user_id e  gym_Id String
  */
