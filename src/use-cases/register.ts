@@ -1,6 +1,5 @@
-import { prisma } from '@/lib/prisma'
+import type { UserRepository } from '@/repositories/users-repository'
 import { hash } from 'bcryptjs'
-import { PrismaUsersRepository } from '@/repositories/prisma-users-repository'
 
 interface RegisterUseCaseRequest {
   name: string
@@ -8,28 +7,29 @@ interface RegisterUseCaseRequest {
   password: string
 }
 
-export async function registerUseCase({
-  name,
-  email,
-  password,
-}: RegisterUseCaseRequest) {
-  const password_hash = await hash(password, 6)
+export class RegisterUseCase {
+  constructor(private usersRepository: UserRepository) {}
 
-  const userWithSameEmail = await prisma.user.findUnique({
-    where: {
+  async execute({ name, email, password }: RegisterUseCaseRequest) {
+    const password_hash = await hash(password, 6)
+
+    const userWithSameEmail = await this.usersRepository.findByEmail(email)
+
+    if (userWithSameEmail) {
+      throw new Error('E-mail already exists.')
+    }
+
+    await this.usersRepository.create({
+      name,
       email,
-    },
-  })
-
-  if (userWithSameEmail) {
-    throw new Error('E-mail already exists.')
+      password_hash,
+    })
   }
-
-  const prismaCreateUsers = new PrismaUsersRepository()
-
-  await prismaCreateUsers.create({
-    name,
-    email,
-    password_hash,
-  })
 }
+
+/**
+ * Como o userRepository é uma interface,
+ * e colocamos o tipo do email dentro,
+ * e o mesmo esta emplementado no nosso usersRepository,
+ * então podemos usar o método findByEmail
+ */
