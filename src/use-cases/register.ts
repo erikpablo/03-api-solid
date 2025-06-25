@@ -1,3 +1,4 @@
+import { UserAlreadyExistsError } from '@/errors/user-already-exists-error'
 import type { UserRepository } from '@/repositories/users-repository'
 import { hash } from 'bcryptjs'
 
@@ -16,7 +17,7 @@ export class RegisterUseCase {
     const userWithSameEmail = await this.usersRepository.findByEmail(email)
 
     if (userWithSameEmail) {
-      throw new Error('E-mail already exists.')
+      throw new UserAlreadyExistsError()
     }
 
     await this.usersRepository.create({
@@ -26,10 +27,3 @@ export class RegisterUseCase {
     })
   }
 }
-
-/**
- * Como o userRepository é uma interface,
- * e colocamos o tipo do email dentro,
- * e o mesmo esta emplementado no nosso usersRepository,
- * então podemos usar o método findByEmail
- */
