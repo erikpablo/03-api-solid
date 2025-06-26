@@ -22,12 +22,16 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     if (err instanceof UserAlreadyExistsError) {
       return reply.status(409).send({ message: err.message })
     }
-    return reply.status(500).send()
+    throw err
   }
   return reply.status(201).send()
 }
 
 /**
- * Dizer que se o nosso error for uma instanceof do UserAlreadyExistsError
- * retornar o status 409
+ * Camo estamos pegando somente error conhecido, se for outro erro, retornamos 500
+ * Porem, é bom, mais usamos o thow new Error('') para erros desconhecidos
+ * Dessa forma se o error nao foi conhecido nao quero trata ele
+ * e quero que o fastify trate ele
+ *
+ * Dessa forma vamos cria um error handler
  */
