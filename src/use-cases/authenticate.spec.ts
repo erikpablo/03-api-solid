@@ -3,13 +3,19 @@ import { expect, describe, it } from 'vitest'
 import { AuthenticateUseCase } from './authenticate'
 import { hash } from 'bcryptjs'
 import { invalidCredentialsError } from './errors/invalid-credentials-error'
+import { beforeEach } from 'vitest'
+
+let usersRepository: InMemoryUsersRepository
+let sut: AuthenticateUseCase
 
 describe('Authenticate Use Case', () => {
   it('should be able to authenticate', async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository()
-    const sut = new AuthenticateUseCase(inMemoryUsersRepository) // boa pratica, dizemos que é a funcao principal que queremos testa
+    beforeEach(() => {
+      usersRepository = new InMemoryUsersRepository()
+      sut = new AuthenticateUseCase(usersRepository)
+    })
 
-    await inMemoryUsersRepository.create({
+    await usersRepository.create({
       name: 'Erik Pablo',
       email: 'erikv@gmail.com',
       password_hash: await hash('123456', 6),
