@@ -9,12 +9,12 @@ let usersRepository: InMemoryUsersRepository
 let sut: AuthenticateUseCase
 
 describe('Authenticate Use Case', () => {
-  it('should be able to authenticate', async () => {
-    beforeEach(() => {
-      usersRepository = new InMemoryUsersRepository()
-      sut = new AuthenticateUseCase(usersRepository)
-    })
+  beforeEach(() => {
+    usersRepository = new InMemoryUsersRepository()
+    sut = new AuthenticateUseCase(usersRepository)
+  })
 
+  it('should be able to authenticate', async () => {
     await usersRepository.create({
       name: 'Erik Pablo',
       email: 'erikv@gmail.com',
@@ -30,8 +30,6 @@ describe('Authenticate Use Case', () => {
   })
 
   it('should be able to authenticate with wrong email', async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository()
-    const sut = new AuthenticateUseCase(inMemoryUsersRepository)
     expect(() =>
       sut.execute({
         email: 'erikv@gmail.com',
@@ -41,10 +39,7 @@ describe('Authenticate Use Case', () => {
   })
 
   it('should be able to authenticate with wrong password', async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository()
-    const sut = new AuthenticateUseCase(inMemoryUsersRepository)
-
-    await inMemoryUsersRepository.create({
+    await usersRepository.create({
       name: 'Erik Pablo',
       email: 'erikv@gmail.com',
       password_hash: await hash('123456', 6),
