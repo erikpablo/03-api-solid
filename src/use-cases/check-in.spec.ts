@@ -67,6 +67,8 @@ describe('CheckIns Use Case', () => {
     await sut.execute({
       userId: 'user-01',
       gymId: 'gym-01',
+      userLatitude: 0,
+      userLongitude: 0,
     })
 
     vi.setSystemTime(new Date(2023, 0, 21, 8, 0, 0))
@@ -74,6 +76,8 @@ describe('CheckIns Use Case', () => {
     const { checkIn } = await sut.execute({
       userId: 'user-01',
       gymId: 'gym-01',
+      userLatitude: 0,
+      userLongitude: 0,
     })
 
     expect(checkIn.id).toEqual(expect.any(String))
