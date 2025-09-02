@@ -24,12 +24,29 @@ export async function authenticate(
       {
         sign: {
           sub: user.id,
-          // jamais colocar informações sensíveis aqui
         },
       }
     )
 
-    return reply.status(200).send({ token })
+    const refreshToken = await reply.jwtSign(
+      {},
+      {
+        sign: {
+          sub: user.id,
+          expiresIn: '7d',
+        },
+      }
+    )
+
+    return reply
+      .setCookie('refreshToken', refreshToken, {
+        path: '/', // todas as rotas teram acesso ao cookie
+        secure: true, //incripitado através https
+        sameSite: true, //mesmo site
+        httpOnly: true, // So vai ser acessivel pelo http, nao pelo js do navegador,
+      })
+      .status(200)
+      .send({ token })
   } catch (err) {
     if (err instanceof invalidCredentialsError) {
       return reply.status(400).send({ message: err.message })
