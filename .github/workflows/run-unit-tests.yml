@@ -1,0 +1,21 @@
+name: Run Unit Tests
+
+on: [push] #quando quero executar 
+
+jobs: #Para definir os trabalhos que serao executados, podemos colocar varios jobs ao mesmo tempo
+  run-unit-tests: 
+    name: Run Unit Tests #nome do jog
+    runs-on: ubuntu-latest # definindo o ambiente que sera executado o job, git suporta varios ambientes
+
+    steps: #definindo os passos que serao executados no job
+      - uses: actions/checkout@v3 #primeiro passo, fazer o checkout do codigo(baixar)
+      - uses: actions/setup-node@v3 #segundo passo, configurar o node
+        with:
+          node-version: '18' #definindo a versao do node
+          cache: 'npm' #definindo o cache do npm
+
+      - run: npm ci #terceiro passo, instalar as dependencias
+
+      - run: npm test #quarto passo, rodar os testes
+      
+
